@@ -71,6 +71,8 @@ public:
   static std::unique_ptr<BtHandshakeMessage> create(const unsigned char* data,
                                                     size_t dataLength);
 
+  static bool isMalicious(const unsigned char* data, size_t dataLength);
+
   virtual ~BtHandshakeMessage();
 
   static const uint8_t ID = INT8_MAX;

@@ -72,7 +72,8 @@ DefaultBtMessageReceiver::receiveHandshake(bool quickReply)
   size_t dataLength = BtHandshakeMessage::MESSAGE_LENGTH;
   if (handshakeSent_ || !quickReply ||
       peerConnection_->getBufferLength() < 48) {
-    if (peerConnection_->receiveHandshake(data, dataLength)) {
+    if (peerConnection_->receiveHandshake(data, dataLength) &&
+        !BtHandshakeMessage::isMalicious(data, dataLength)) {
       auto msg = messageFactory_->createHandshakeMessage(data, dataLength);
       msg->validate();
       return msg;
@@ -94,7 +95,8 @@ DefaultBtMessageReceiver::receiveHandshake(bool quickReply)
     }
     if (peerConnection_->getBufferLength() ==
             BtHandshakeMessage::MESSAGE_LENGTH &&
-        peerConnection_->receiveHandshake(data, dataLength)) {
+        peerConnection_->receiveHandshake(data, dataLength) &&
+        !BtHandshakeMessage::isMalicious(data, dataLength)) {
       auto msg = messageFactory_->createHandshakeMessage(data, dataLength);
       msg->validate();
       return msg;

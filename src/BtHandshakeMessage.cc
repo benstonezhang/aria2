@@ -33,6 +33,7 @@
  */
 /* copyright --> */
 #include "BtHandshakeMessage.h"
+#include "LogFactory.h"
 
 #include <cstring>
 
@@ -79,6 +80,18 @@ BtHandshakeMessage::create(const unsigned char* data, size_t dataLength)
   std::copy_n(&data[48], msg->peerId_.size(), std::begin(msg->peerId_));
 
   return msg;
+}
+
+bool BtHandshakeMessage::isMalicious(const unsigned char* data, size_t dataLength)
+{
+  if ((memcmp((const char *)data + 48, "-DT0", 4) == 0) ||
+      (memcmp((const char *)data + 48, "-GT0", 4) == 0) ||
+      (memcmp((const char *)data + 48, "-XL0", 4) == 0)) {
+    A2_LOG_NOTICE(fmt("Handshake peer is malicious client, peerid=%s",
+                      util::percentEncode(data + 48, PEER_ID_LENGTH).c_str()));
+    return true;
+  }
+  return false;
 }
 
 std::vector<unsigned char> BtHandshakeMessage::createMessage()
